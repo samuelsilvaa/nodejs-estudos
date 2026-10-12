@@ -10,7 +10,7 @@ com foco em montar APIs e, mais adiante, conectar com MySQL.
 - [x] POST /usuarios (criar usuário)
 - [x] GET /usuarios (listar usuários)
 - [ ] PUT/PATCH /usuarios/:id (editar)
-- [ ] DELETE /usuarios/:id (deletar)
+- [x] DELETE /usuarios/:id (deletar)
 - [ ] Conexão com MySQL
 
 ## Como rodar
