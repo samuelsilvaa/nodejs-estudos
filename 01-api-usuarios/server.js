@@ -22,18 +22,45 @@ import express from 'express'
 const app = express()
 app.use(express.json())
 
+const PORT = 3000
 const users = []
+let nextId = 1
 
 
+//rota de criacao
 app.post('/usuarios', (req, res) => {
-    users.push(req.body) //mandando os users para a variavel users, direto do body
+    const {nome, email} = req.body
 
-    res.send('ok, post')
-})
+    if (!nome || !email) {
+        return res.status(400).json({ erro: "nome e email são obrigátios" })
+    }
 
-// criando uma rota: 
+    const usuario = { id: nextId, nome, email }
+    users.push(usuario)
+
+    res.status(201).json(usuario)   
+});
+
+
 app.get('/usuarios', (req, res) => {
-    res.status(200).json(users) // mandando os usuarios em json
+    res.status(200).json(users)
 })
 
-app.listen(3000)
+// rota de delete
+app.delete('/usuarios/:id', (req, res) => {
+     
+    const id = Number(req.params.id) 
+
+    const indice = users.findIndex(user => user.id === id);
+
+    if(indice === -1) {
+        return res.status(404).json({ erro: "usuario nao encontrado" })
+    }
+    
+    users.splice(indice, 1) 
+    res.status(204).send()
+
+})
+
+
+app.listen(PORT)
