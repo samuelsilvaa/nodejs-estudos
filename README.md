@@ -9,7 +9,7 @@ com foco em montar APIs e, mais adiante, conectar com MySQL.
 - [x] Rotas e verbos HTTP
 - [x] POST /usuarios (criar usuário)
 - [x] GET /usuarios (listar usuários)
-- [ ] PUT/PATCH /usuarios/:id (editar)
+- [x] PUT/PATCH /usuarios/:id (editar)
 - [x] DELETE /usuarios/:id (deletar)
 - [ ] Conexão com MySQL
 
