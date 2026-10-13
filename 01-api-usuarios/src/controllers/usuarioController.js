@@ -1,76 +1,50 @@
-/*
-    CRIAR UMA API DE usuarios
 
-       [x] CRIAR UM USUARIO
-       [x] LISTAR TODOS OS USUARIOS~
-       [x] EDITAR O USUARIO
-       [x] DELETAR O USUARIO
-
-*/
-
-/*
-app.post('/usuarios', ) cria um usuario
-app.delete('/usuarios', ) deleta um usuario
-app.put('/usuarios', ) substitui o recurso inteiro (você manda todos os campos)
-app.patch('/usuarios', ) altera só alguns campos (você manda só o que mudou).
-*/
-
-
-import express from 'express'
-
-// dentro do "app" tem tudo que posso usar do express
-const app = express()
-app.use(express.json())
-
-const PORT = 3000
+// O array e o contador agora moram aqui dentro do cérebro da aplicação
 const users = []
 let nextId = 1
 
-
-//rota de criacao
-app.post('/usuarios', (req, res) => {
-    const {nome, email} = req.body
+// 1. Função de Criação (POST)
+export const criarUsuario = (req, res) => {
+    const { nome, email } = req.body
 
     if (!nome || !email) {
-        return res.status(400).json({ erro: "nome e email são obrigátios" })
+        return res.status(400).json({ erro: "nome e email são obrigatórios" })
     }
 
     const usuario = { id: nextId++, nome, email }
     users.push(usuario)
 
     res.status(201).json(usuario)   
-});
+}
 
 
-app.get('/usuarios', (req, res) => {
+// 2. Função de Listagem (GET)
+export const listarUsuarios = (req, res) => {
     res.status(200).json(users)
-})
+}
 
-// rota de delete
-app.delete('/usuarios/:id', (req, res) => {
-     
+
+// rota de delete (DELETE)
+export const deletarUsuario = (req, res) => {
     const id = Number(req.params.id) 
+    const indice = users.findIndex(user => user.id === id)
 
-    const indice = users.findIndex(user => user.id === id);
-
-    if(indice === -1) {
+    if (indice === -1) {
         return res.status(404).json({ erro: "usuario nao encontrado" })
     }
     
     users.splice(indice, 1) 
     res.status(204).send()
-
-})
-
+}
 
 
-app.put('/usuarios/:id', (req, res) => {
+// 4. Função de Atualização Total (PUT)
+export const atualizarUsuarioTotal = (req, res) => {
 
     const id = Number(req.params.id) // 1. id da url
-
     const { nome, email } = req.body // 2. nome e email do body
-
     const indice = users.findIndex(user => user.id === id) // 3. procurar indice no array
+
 
     if(indice === -1) { // 4. nao achou, return com 404
         return res.status(404).json({erro: "usuario nao encontrado"})
@@ -84,10 +58,11 @@ app.put('/usuarios/:id', (req, res) => {
 
     res.status(200).json(users[indice]) // 7. responder 200 com o usuario atualizado
 
-})
+}
 
 
-app.patch('/usuarios/:id', (req, res) => {
+// 5. Função de Atualização Parcial (PATCH)
+export const atualizarUsuarioParcial = (req, res) => {
 
     const id = Number(req.params.id) // 1. pegar o id que vem da url
     const { nome, email } = req.body // 2. pegar nome e email do body
@@ -112,7 +87,4 @@ app.patch('/usuarios/:id', (req, res) => {
 
     res.status(200).json(users[indice]) // resposta 200, deu tudo certo
 
-});
-
-
-app.listen(PORT)
+};
