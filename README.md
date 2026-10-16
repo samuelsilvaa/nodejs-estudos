@@ -1,25 +1,32 @@
-# Estudos de Node.js
+# Estudos de Node.js, Express & Prisma ORM 🚀
 
-Repositório onde registro meus estudos de Node.js e Express,
-com foco em montar APIs e, mais adiante, conectar com MySQL.
+Repositório dedicado ao registro do meu aprendizado em **Node.js** e **Express**, focado no desenvolvimento de APIs RESTful e integração com banco de dados usando o **Prisma ORM**.
 
-## Conteúdo
+## 📌 Conteúdo & Aprendizados
 
-- [x] Servidor Express básico
-- [x] Rotas e verbos HTTP
-- [x] POST /usuarios (criar usuário)
-- [x] GET /usuarios (listar usuários)
-- [x] PUT/PATCH /usuarios/:id (editar)
-- [x] DELETE /usuarios/:id (deletar)
-- [ ] Conexão com MySQL
+- [x] Servidor Express básico com ES Modules (`import/export`)
+- [x] Estrutura e manipulação de verbos HTTP (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`)
+- [x] Conexão com o MySQL (via Prisma ORM)
+- [x] CRUD Completo de Usuários:
+  - [x] `POST /usuarios` - Criar usuário com validação de dados
+  - [x] `GET /usuarios` - Listar todos os usuários
+  - [x] `PUT /usuarios/:id` - Atualização total de dados
+  - [x] `PATCH /usuarios/:id` - Atualização parcial flexível
+  - [x] `DELETE /usuarios/:id` - Remoção de usuário
+- [x] Validação de parâmetros (`req.params`) e tipos de dados
+- [x] Tratamento de erros do Prisma (`P2002` para dados duplicados e `P2025` para não encontrado)
+- [x] Respostas padronizadas com códigos de status HTTP apropriados (`200`, `201`, `204`, `400`, `404`, `409`, `500`)
 
-## Como rodar
+## 🛠️ Tecnologias Utilizadas
 
-npm install
-node server.js
+- **Node.js**
+- **Express**
+- **Prisma ORM**
+- **MySQL**
+- **JavaScript (ES6+)**
 
-O servidor sobe em http://localhost:3000
+## 🔧 Como Rodar o Projeto
 
-## Tecnologias
-
-Node.js, Express    
+   1. Instale as dependências:
+   ```bash
+   npm install
