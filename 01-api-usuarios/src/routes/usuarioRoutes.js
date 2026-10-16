@@ -2,7 +2,7 @@ import express from 'express';
 
 // importando as funções que criei no Controllers
 import {
-    criarUsuario, 
+    criarUsuario,
     listarUsuarios, 
     deletarUsuario, 
     atualizarUsuarioTotal, 

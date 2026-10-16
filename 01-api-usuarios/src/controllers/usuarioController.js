@@ -1,40 +1,81 @@
+import { prisma } from '../lib/prisma.js'
 
 // O array e o contador agora moram aqui dentro do cérebro da aplicação
 const users = []
 let nextId = 1
 
 // 1. Função de Criação (POST)
-export const criarUsuario = (req, res) => {
+export const criarUsuario = async (req, res) => {
     const { nome, email } = req.body
 
     if (!nome || !email) {
         return res.status(400).json({ erro: "nome e email são obrigatórios" })
     }
 
-    const usuario = { id: nextId++, nome, email }
-    users.push(usuario)
+    try {
+        const usuario = await prisma.usuario.create({
+            data: { nome, email }
 
-    res.status(201).json(usuario)   
+        })
+
+        res.status(201).json(usuario)
+
+    } catch (erro) {
+        if(erro === 'P2002') {
+            return res.status(409).json({erro: "email já cadastrado"})
+        }
+
+        console.error(erro)
+        return res.status(500).json({erro: "erro no servidor interno"})
+    }
+
 }
 
 
 // 2. Função de Listagem (GET)
-export const listarUsuarios = (req, res) => {
-    res.status(200).json(users)
+export const listarUsuarios = async (req, res) => {
+
+    try {
+
+        const usuarios = await prisma.usuario.findMany()
+
+        res.status(200).json(usuarios)
+
+    } catch(erro) {
+        console.error(erro)
+        return res.status(500).json({erro: "erro no servidor"})
+    }
 }
 
 
-// rota de delete (DELETE)
-export const deletarUsuario = (req, res) => {
-    const id = Number(req.params.id) 
-    const indice = users.findIndex(user => user.id === id)
+// 3. função de Delete (DELETE)
+export const deletarUsuario = async (req, res) => {
 
-    if (indice === -1) {
-        return res.status(404).json({ erro: "usuario nao encontrado" })
-    }
+    const id = Number(req.params.id) 
     
-    users.splice(indice, 1) 
-    res.status(204).send()
+    if(!Number.isInteger(id)) { // verificar se o texto virou um número inteiro válido
+        return res.status(400).json({erro: "Id inválido"})
+    }
+
+
+    try {
+        await prisma.usuario.delete({
+            where: { id }
+        })
+
+        res.status(204).send()
+
+    } catch(erro) {
+
+        if(erro.code === 'P2025') {
+            return res.status(404).json({ erro: "Usuário não encontrado" })
+        }
+
+        console.error(erro)
+        return res.status(500).json({ erro: "erro interno do servidor"})
+    }
+        
+    
 }
 
 
