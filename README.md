@@ -27,6 +27,72 @@ Repositório dedicado ao registro do meu aprendizado em **Node.js** e **Express*
 
 ## 🔧 Como Rodar o Projeto
 
-   1. Instale as dependências:
-   ```bash
-   npm install
+### Pré-requisitos
+
+- Node.js instalado
+- MySQL instalado e rodando
+- Yarn instalado
+
+### Passo a passo
+
+1. Clone o repositório e entre na pasta do projeto:
+
+```bash
+   git clone https://github.com/samuelsilvaa/nodejs-estudos.git
+   cd nodejs-estudos/01-api-usuarios
+```
+
+2. Instale as dependências:
+
+```bash
+   yarn install
+```
+
+3. Crie o arquivo `.env` a partir do exemplo:
+
+```bash
+   copy .env.example .env
+```
+
+   (no Mac ou Linux: `cp .env.example .env`)
+
+4. Abra o `.env` e preencha a `DATABASE_URL` com o seu usuário, senha e nome do banco:
+
+```
+   DATABASE_URL="mysql://root:SUA_SENHA@localhost:3306/api_usuarios"
+```
+
+   Se a senha tiver caracteres especiais (`@`, `#`, `/`), eles precisam ser codificados na URL.
+
+5. Crie o banco e a tabela com a migration do Prisma:
+
+```bash
+   yarn prisma migrate dev
+```
+
+6. Inicie o servidor:
+
+```bash
+   yarn dev
+```
+
+A API fica disponível em `http://localhost:3000`.
+
+## 📡 Rotas da API
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `POST` | `/usuarios` | Cria um usuário |
+| `GET` | `/usuarios` | Lista todos os usuários |
+| `PUT` | `/usuarios/:id` | Atualiza todos os dados de um usuário |
+| `PATCH` | `/usuarios/:id` | Atualiza parte dos dados de um usuário |
+| `DELETE` | `/usuarios/:id` | Remove um usuário |
+
+Exemplo de body para criar ou atualizar (JSON):
+
+```json
+{
+  "nome": "Ana Souza",
+  "email": "ana@exemplo.com"
+}
+```
