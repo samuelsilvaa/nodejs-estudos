@@ -26,16 +26,16 @@ Repositório dedicado ao registro do meu aprendizado em **Node.js** e **Express*
 - **JavaScript (ES6+)**
 
 ## 🔧 Como Rodar o Projeto
+## 🔧 Como Rodar o Projeto
 
 ### Pré-requisitos
 
 - Node.js instalado
 - MySQL instalado e rodando
-- Yarn instalado
 
 ### Passo a passo
 
-1. Clone o repositório e entre na pasta do projeto:
+1. Clone o repositório e entre na pasta da API:
 
 ```bash
    git clone https://github.com/samuelsilvaa/nodejs-estudos.git
@@ -45,7 +45,7 @@ Repositório dedicado ao registro do meu aprendizado em **Node.js** e **Express*
 2. Instale as dependências:
 
 ```bash
-   yarn install
+   npm install
 ```
 
 3. Crie o arquivo `.env` a partir do exemplo:
@@ -64,35 +64,18 @@ Repositório dedicado ao registro do meu aprendizado em **Node.js** e **Express*
 
    Se a senha tiver caracteres especiais (`@`, `#`, `/`), eles precisam ser codificados na URL.
 
-5. Crie o banco e a tabela com a migration do Prisma:
+5. Crie a tabela no banco com a migration do Prisma:
 
 ```bash
-   yarn prisma migrate dev
+   npx prisma migrate dev
 ```
+
+ Se o banco já existir e você só precisar gerar o Prisma Client, rode `npx prisma generate`.
 
 6. Inicie o servidor:
 
 ```bash
-   yarn dev
+   npm run dev
 ```
 
 A API fica disponível em `http://localhost:3000`.
-
-## 📡 Rotas da API
-
-| Método | Rota | Descrição |
-|---|---|---|
-| `POST` | `/usuarios` | Cria um usuário |
-| `GET` | `/usuarios` | Lista todos os usuários |
-| `PUT` | `/usuarios/:id` | Atualiza todos os dados de um usuário |
-| `PATCH` | `/usuarios/:id` | Atualiza parte dos dados de um usuário |
-| `DELETE` | `/usuarios/:id` | Remove um usuário |
-
-Exemplo de body para criar ou atualizar (JSON):
-
-```json
-{
-  "nome": "Ana Souza",
-  "email": "ana@exemplo.com"
-}
-```

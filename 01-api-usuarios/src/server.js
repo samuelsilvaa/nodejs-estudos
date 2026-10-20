@@ -7,12 +7,19 @@ app.patch('/usuarios', ) altera só alguns campos (você manda só o que mudou).
 
 
 import 'dotenv/config' // ativa o arquivo secreto logo de inicio
+import cors from 'cors'
 import express from 'express'
 import usuarioRoutes from './routes/usuarioRoutes.js' // Importando o roteador que criei na pasta routes
 
 // dentro do "app" tem tudo que posso usar do express
 const app = express()
 const PORT = process.env.PORT || 3000
+
+// para pode liberar a api a mandar informacoes ao front end
+app.use(cors())
+
+//usado para liberar o front
+app.use(cors({ origin: process.env.FRONTEND_URL }))
 
 // Avisa o express para aceitar JSON no corpo (body) das requisições
 app.use(express.json())
