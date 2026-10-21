@@ -1,18 +1,26 @@
+import { z } from 'zod';
 import { prisma } from '../lib/prisma.js'
 
+import { usuarioSchema, formatarErrosZod, idParamsSchema, atualizarUsuarioSchema } from '../schemas/usuarioSchema.js'
 
 // 1. Função de Criação (POST)
 export const criarUsuario = async (req, res) => {
-    const { nome, email } = req.body
+    // executa a validação segura
+    const resultado = usuarioSchema.safeParse(req.body)
 
-    if (!nome || !email) {
-        return res.status(400).json({ erro: "nome e email são obrigatórios" })
-    }
+    // se a validação falhar:
+    if(!resultado.success) {
+        //Transforma o ZodError em um objeto limpo por campo usando o helper global
+        const erros = formatarErrosZod(resultado.error)
+
+        return res.status(400).json({erros});
+    };
+
+    const {nome, email} = resultado.data;
 
     try {
         const usuario = await prisma.usuario.create({
             data: { nome, email }
-
         })
 
         res.status(201).json(usuario)
@@ -48,12 +56,16 @@ export const listarUsuarios = async (req, res) => {
 // 3. função de Delete (DELETE)
 export const deletarUsuario = async (req, res) => {
 
-    const id = Number(req.params.id) 
+    const resultDelete = idParamsSchema.safeParse(req.params)
     
-    if(!Number.isInteger(id)) { // verificar se o texto virou um número inteiro válido
-        return res.status(400).json({erro: "Id inválido"})
+    // se a validação falhar
+    if(!resultDelete.success) {
+        const errosDelete = formatarErrosZod(resultDelete.error) // formatar o erro que vem do resultDelete
+
+        return res.status(400).json(errosDelete)
     }
 
+    const { id } = resultDelete.data
 
     try {
         await prisma.usuario.delete({
@@ -79,17 +91,19 @@ export const deletarUsuario = async (req, res) => {
 // 4. Função de Atualização Total (PUT)
 export const atualizarUsuarioTotal = async (req, res) => {
 
-    const id = Number(req.params.id) // id da url
+    const resultPut = idParamsSchema.safeParse(req.params)
+    const reqValidacao = usuarioSchema.safeParse(req.body)
     
-    if(!Number.isInteger(id)) { 
-        return res.status(400).json({ erro: "id inválido"})
-    }
+    if(!resultPut.success || !reqValidacao.success) {
+        const erros = !resultPut.success 
+            ? formatarErrosZod(resultPut.error) 
+            : formatarErrosZod(reqValidacao.error);
 
-    const { nome, email } = req.body // pegando o nome e email do body
-    
-    if(!nome || !email) { // se faltou campos, return com 400
-        return res.status(400).json({erro: "nome e email são obrigatórios"})
-    }
+        return res.status(400).json({ erros })
+    };
+
+    const { id } = resultPut.data;
+    const { nome, email } = reqValidacao.data;
 
     try {
         const usuario = await prisma.usuario.update({
@@ -117,17 +131,20 @@ export const atualizarUsuarioTotal = async (req, res) => {
 // 5. Função de Atualização Parcial (PATCH)
 export const atualizarUsuarioParcial = async (req, res) => {
 
-    const id = Number(req.params.id) // . pegar o id que vem da url
+    const resultPatch = idParamsSchema.safeParse(req.params)
+    const reqValidacao = atualizarUsuarioSchema.safeParse(req.body)
+
     
-    if(!Number.isInteger(id)) {
-        return res.status(400).json({ erro: "id inválido" })
+    if(!resultPatch.success || !reqValidacao.success) {
+        const erros = !resultPatch.success 
+            ? formatarErrosZod(resultPatch.error) 
+            : formatarErrosZod(reqValidacao.error);
+
+        return res.status(400).json({erros})
     };
 
-    const { nome, email } = req.body // . pegar nome e email do body
-
-    if(!nome && !email ) { // se o nome E o email não forem preenchidos (ou seja, se ambos vierem vazios)"
-        return res.status(400).json({erro: "Pelo menos um dos campos deve ser enviado"})
-    };
+    const { id } = resultPatch.data; // pegar o id
+    const { nome, email } = reqValidacao.data; // . pegar nome e email
 
     try {
         const usuario = await prisma.usuario.update({

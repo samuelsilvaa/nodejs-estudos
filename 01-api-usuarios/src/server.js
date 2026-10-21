@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3000
 // para pode liberar a api a mandar informacoes ao front end
 app.use(cors())
 
-//usado para liberar o front
+//usado para liberar o front, mas apenas a origem 
 app.use(cors({ origin: process.env.FRONTEND_URL }))
 
 // Avisa o express para aceitar JSON no corpo (body) das requisições
