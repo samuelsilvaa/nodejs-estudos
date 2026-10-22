@@ -5,167 +5,79 @@ import { usuarioSchema, formatarErrosZod, idParamsSchema, atualizarUsuarioSchema
 
 // 1. Função de Criação (POST)
 export const criarUsuario = async (req, res) => {
-    // executa a validação segura
-    const resultado = usuarioSchema.safeParse(req.body)
+   // Se falhar aqui, o Zod joga o erro. O Express captura e manda pro Middleware!
+    const { nome, email } = usuarioSchema.parse(req.body);
 
-    // se a validação falhar:
-    if(!resultado.success) {
-        //Transforma o ZodError em um objeto limpo por campo usando o helper global
-        const erros = formatarErrosZod(resultado.error)
+    // se o banco falhar por email duplicado, o prisma joga o erro e o express captura ele
+    const usuario = await prisma.usuario.create({
+        data: { nome, email }
+    });
 
-        return res.status(400).json({erros});
-    };
-
-    const {nome, email} = resultado.data;
-
-    try {
-        const usuario = await prisma.usuario.create({
-            data: { nome, email }
-        })
-
-        res.status(201).json(usuario)
-
-    } catch (erro) {
-        if(erro.code === 'P2002') {
-            return res.status(409).json({erro: "email já cadastrado"})
-        }
-
-        console.error(erro)
-        return res.status(500).json({erro: "erro no servidor interno"})
-    }
+    // codigo de sucesso
+    return res.status(201).json(usuario)
 
 }
 
 
 // 2. Função de Listagem (GET)
 export const listarUsuarios = async (req, res) => {
-
-    try {
-
+        //Busca no banco, se falhar vai direto para o middleware
         const usuarios = await prisma.usuario.findMany()
 
+        // resposta dos usuarios encontrados
         res.status(200).json(usuarios)
 
-    } catch(erro) {
-        console.error(erro)
-        return res.status(500).json({erro: "erro no servidor"})
-    }
 }
 
 
 // 3. função de Delete (DELETE)
 export const deletarUsuario = async (req, res) => {
 
-    const resultDelete = idParamsSchema.safeParse(req.params)
+    const { id } = idParamsSchema.parse(req.params)
+
     
-    // se a validação falhar
-    if(!resultDelete.success) {
-        const errosDelete = formatarErrosZod(resultDelete.error) // formatar o erro que vem do resultDelete
-
-        return res.status(400).json(errosDelete)
-    }
-
-    const { id } = resultDelete.data
-
-    try {
         await prisma.usuario.delete({
             where: { id }
         })
 
         res.status(204).send()
 
-    } catch(erro) {
-
-        if(erro.code === 'P2025') {
-            return res.status(404).json({ erro: "Usuário não encontrado" })
-        }
-
-        console.error(erro)
-        return res.status(500).json({ erro: "erro interno do servidor"})
-    }
-        
-    
 }
 
 
 // 4. Função de Atualização Total (PUT)
 export const atualizarUsuarioTotal = async (req, res) => {
+           
+        const { id } = idParamsSchema.parse(req.params)
+        const { nome, email } = usuarioSchema.parse(req.body)
 
-    const resultPut = idParamsSchema.safeParse(req.params)
-    const reqValidacao = usuarioSchema.safeParse(req.body)
-    
-    if(!resultPut.success || !reqValidacao.success) {
-        const erros = !resultPut.success 
-            ? formatarErrosZod(resultPut.error) 
-            : formatarErrosZod(reqValidacao.error);
-
-        return res.status(400).json({ erros })
-    };
-
-    const { id } = resultPut.data;
-    const { nome, email } = reqValidacao.data;
-
-    try {
         const usuario = await prisma.usuario.update({
             where: { id },
             data: { nome, email }
         })
 
         res.status(200).json(usuario)
-    } catch (erro) {
-        if(erro.code === 'P2025') {
-            return res.status(404).json({erro: "Usuário não encontrado"})
-        }
 
-        if(erro.code === 'P2002') {
-            return res.status(409).json({erro: "email já cadastrado" })
-        }
-
-        console.error(erro)
-        return res.status(500).json({erro: "Erro no servidor interno"})
-    }
-    
 }
 
 
 // 5. Função de Atualização Parcial (PATCH)
 export const atualizarUsuarioParcial = async (req, res) => {
 
-    const resultPatch = idParamsSchema.safeParse(req.params)
-    const reqValidacao = atualizarUsuarioSchema.safeParse(req.body)
+        // 1. pegando o id do params
+        const { id } = idParamsSchema.parse(req.params)
+        const { nome, email } = atualizarUsuarioSchema.parse(req.body)
 
-    
-    if(!resultPatch.success || !reqValidacao.success) {
-        const erros = !resultPatch.success 
-            ? formatarErrosZod(resultPatch.error) 
-            : formatarErrosZod(reqValidacao.error);
-
-        return res.status(400).json({erros})
-    };
-
-    const { id } = resultPatch.data; // pegar o id
-    const { nome, email } = reqValidacao.data; // . pegar nome e email
-
-    try {
+        // 2. O Prisma executa a atualização direta
         const usuario = await prisma.usuario.update({
             where: { id },
-            data: {nome,
-                   email
-                }
+            data: {
+                nome,
+                email
+            }
         })
 
+        // 3. Mando a resposta de sucesso
         res.status(200).json(usuario)
-    } catch (erro) {
-        if(erro.code === 'P2025') {
-            return res.status(404).json({ erro: "Usuário não encontrado" })
-        }
-
-        if(erro.code === 'P2002') {
-            return res.status(409).json({ erro: "Esse email já existe" })
-        }
-
-        console.error(erro)
-        res.status(500).json({ erro: "erro no servidor interno"} )
-
-    }
+    
 };
