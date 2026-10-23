@@ -3,12 +3,14 @@ import { useState } from 'react'
 import './App.css'
 import { useEffect } from 'react'
 
+const API_URL = import.meta.env.VITE_API_URL
+
 function App() {
-  const API_URL = import.meta.env.VITE_API_URL
 
   const [usuarios, setUsuarios] = useState([])
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
+  const [idEditando, setIdEditando] = useState(null) // NOVO: null = modo criar, número = editando esse id
 
   const [erro, setErro] = useState('') // mostrar o erro na tela para o usuario vizualizar
 
@@ -27,30 +29,67 @@ function App() {
   }, [])
 
 
-  // FUNCAO PARA CRIAR O USUARIO (POST)
-  async function criarUsuario(evento) {
+  // NOVO: entra no modo editar, preenchendo o formulario com o usuario clicado
+  function iniciarEdicao(usuario) {
+    setIdEditando(usuario.id)
+    setNome(usuario.nome)
+    setEmail(usuario.email)
+    setErro('')
+  }
+
+  // NOVO: sai do modo editar e limpa o formulario
+  function cancelarEdicao() {
+    setIdEditando(null)
+    setNome('')
+    setEmail('')
+  }
+
+
+  // ALTERADO: era criarUsuario, agora serve para criar (POST) e editar (PUT)
+  async function salvarUsuario(evento) {
     evento.preventDefault()
     setErro('')
 
+    // o que muda entre criar e editar é só a URL e o método
+    const editando = idEditando !== null
+    const url = editando
+      ? `${API_URL}/usuarios/${idEditando}`
+      : `${API_URL}/usuarios`
+    const metodo = editando ? 'PUT' : 'POST'
+
     try {
-      const resposta = await fetch(`${API_URL}/usuarios`, {
-        method: 'POST',
+      const resposta = await fetch(url, {
+        method: metodo,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome, email }),
       })
+
+      // NOVO: erro de validação do Zod (mensagem vem da API)
+      if (resposta.status === 400) {
+        const dados = await resposta.json()
+        setErro(dados.erros?.[0]?.mensagem ?? 'Confira os campos.')
+        return
+      }
 
       if (resposta.status === 409) {
         setErro('Esse email já está cadastrado.')
         return
       }
 
-      if (!resposta.ok) {
-        setErro('Não foi possível criar o usuário. Confira os campos.')
+      // NOVO: o usuario foi apagado enquanto estava sendo editado
+      if (resposta.status === 404) {
+        setErro('Esse usuário não existe mais.')
+        cancelarEdicao()
+        buscarUsuarios()
         return
       }
 
-      setNome('')
-      setEmail('')
+      if (!resposta.ok) {
+        setErro('Não foi possível salvar o usuário.')
+        return
+      }
+
+      cancelarEdicao() // ALTERADO: limpa os campos e volta ao modo criar
       buscarUsuarios()
     } catch {
       setErro('Não foi possível falar com a API. Ela está rodando?')
@@ -76,6 +115,11 @@ function App() {
         return
       }
 
+      // NOVO: se excluiu quem estava sendo editado, sai do modo editar
+      if (id === idEditando) {
+        cancelarEdicao()
+      }
+
       buscarUsuarios()
     } catch {
       setErro("Não foi possível falar com a API. Ela está rodando?")
@@ -90,7 +134,7 @@ function App() {
 
           <h1 className='titulo'>usuarios</h1>
 
-          <form onSubmit={criarUsuario}>
+          <form onSubmit={salvarUsuario}> {/* ALTERADO: criarUsuario -> salvarUsuario */}
             <input type="text"
               className='input-campo'
               placeholder='Nome'
@@ -103,7 +147,17 @@ function App() {
               value={email}
               onChange={(e) => setEmail(e.target.value)} />
 
-            <button type='submit' className='btn-criar'>Criar</button>
+            {/* ALTERADO: o texto do botão muda conforme o modo */}
+            <button type='submit' className='btn-criar'>
+              {idEditando !== null ? 'Salvar' : 'Criar'}
+            </button>
+
+            {/* NOVO: Cancelar só aparece no modo editar */}
+            {idEditando !== null && (
+              <button type='button' className='btn-cancelar' onClick={cancelarEdicao}>
+                Cancelar
+              </button>
+            )}
           </form>
 
 
@@ -113,7 +167,11 @@ function App() {
                 <strong>Nome:</strong> {u.nome} <br />
                 <small><strong>Email:</strong> {u.email}</small>
               </span>
-                <button className='btn-excluir' onClick={() => excluirUsuario(u.id)}>Excluir</button>
+                {/* ALTERADO: os dois botões agora ficam juntos numa div */}
+                <div className='acoes-usuario'>
+                  <button className='btn-editar' onClick={() => iniciarEdicao(u)}>Editar</button>
+                  <button className='btn-excluir' onClick={() => excluirUsuario(u.id)}>Excluir</button>
+                </div>
               </li>
             ))}
           </ul>
