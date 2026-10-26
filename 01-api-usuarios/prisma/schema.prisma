@@ -8,7 +8,17 @@ generator client {
 }
 
 model Usuario {
-  id    Int    @id @default(autoincrement())
-  nome  String
-  email String @unique
-}       
+  id      Int    @id @default(autoincrement())
+  nome    String
+  email   String @unique
+  tarefas Tarefa[]
+}
+
+model Tarefa {
+  id        Int   @id @default(autoincrement())
+  titulo    String
+  concluido Boolean @default(false)
+  criadaEm  DateTime @default(now())
+  usuarioId Int 
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+}
