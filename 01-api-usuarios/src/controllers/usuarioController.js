@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { prisma } from '../lib/prisma.js'
 
-import { usuarioSchema, formatarErrosZod, idParamsSchema, atualizarUsuarioSchema } from '../schemas/usuarioSchema.js'
+import { usuarioSchema, idParamsSchema, atualizarUsuarioSchema } from '../schemas/usuarioSchema.js'
 
 // 1. Função de Criação (POST)
 export const criarUsuario = async (req, res) => {

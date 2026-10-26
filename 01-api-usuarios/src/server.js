@@ -10,21 +10,23 @@ import 'dotenv/config' // ativa o arquivo secreto logo de inicio
 import cors from 'cors'
 import express from 'express'
 import usuarioRoutes from './routes/usuarioRoutes.js' 
+import tarefaRoutes from './routes/tarefaRoutes.js'
 import { gerenciadorDeErros } from './middlewares/gerenciadorDeErros.js';
 
 const app = express()
 const PORT = process.env.PORT || 3000
 
-// Apenas a liberação segura para o Front-end específico
+// 1 Apenas a liberação segura para o Front-end específico
 app.use(cors({ origin: process.env.FRONTEND_URL }))
 
-// Avisa o express para aceitar JSON no corpo (body) das requisições
+// 2 Avisa o express para aceitar JSON no corpo (body) das requisições
 app.use(express.json())
 
-// Conecta as rotas de usuários ao nosso servidor principal
+// 3 Conecta as rotas de usuários ao nosso servidor principal
 app.use(usuarioRoutes)
+app.use('/tarefas', tarefaRoutes)
 
-// Ativa a rede de segurança global (SEMPRE depois de todas as rotas!)
+// 4 Ativa a rede de segurança global (SEMPRE depois de todas as rotas!)
 app.use(gerenciadorDeErros)
 
 // inicializa o servidor na porta 3000

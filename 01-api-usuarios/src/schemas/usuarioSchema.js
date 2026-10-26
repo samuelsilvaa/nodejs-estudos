@@ -23,7 +23,6 @@ export const formatarErrosZod = (error) => {
 
 //molde para validadar o id que vai na url
 // util para: GET(um), DELETE, PATCH E PUT
-
 export const idParamsSchema = z.object({
     id: z.string().transform(Number)
 })
