@@ -1,4 +1,4 @@
-
+import Tarefas from './Tarefas.jsx'
 import { useState } from 'react'
 import './App.css'
 import { useEffect } from 'react'
@@ -12,14 +12,16 @@ function App() {
   const [email, setEmail] = useState('')
   const [idEditando, setIdEditando] = useState(null) // NOVO: null = modo criar, número = editando esse id
 
+  const [idSelecionado, setIdSelecionado] = useState(null)
+
   const [erro, setErro] = useState('') // mostrar o erro na tela para o usuario vizualizar
 
+  const usuarioSelecionado = usuarios.find((u) => u.id === idSelecionado)
 
   // funcao para buscar usuarios
   async function buscarUsuarios() {
     const resposta = await fetch(`${API_URL}/usuarios`)
     const dados = await resposta.json()
-    console.log(dados)
     setUsuarios(dados)
   }
 
@@ -103,6 +105,10 @@ function App() {
       return
     }
 
+    if (id === idSelecionado) {
+      setIdSelecionado(null)
+    }
+
     setErro('')
 
     try {
@@ -169,12 +175,17 @@ function App() {
               </span>
                 {/* ALTERADO: os dois botões agora ficam juntos numa div */}
                 <div className='acoes-usuario'>
+                  <button className='btn-tarefas' onClick={() => setIdSelecionado(u.id)}>Tarefas</button>
                   <button className='btn-editar' onClick={() => iniciarEdicao(u)}>Editar</button>
                   <button className='btn-excluir' onClick={() => excluirUsuario(u.id)}>Excluir</button>
                 </div>
               </li>
             ))}
           </ul>
+
+          {usuarioSelecionado && (
+            <Tarefas key={usuarioSelecionado.id} usuario={usuarioSelecionado} />
+          )}
 
           {erro && <p className='msg-erro'>{erro}</p>}
 

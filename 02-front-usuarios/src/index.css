@@ -156,3 +156,88 @@
   margin-top: 16px;
   margin-bottom: 0;
 }
+
+/* parte das tarefas */
+.btn-tarefas {
+  background-color: transparent;
+  color: #94a3b8;
+  border: 1px solid #e2e8f0;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.btn-tarefas:hover {
+  background-color: #ccfbf1;
+  color: #0f766e;
+  border-color: #5eead4;
+}
+
+/* Painel de tarefas */
+.painel-tarefas {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.subtitulo {
+  margin: 0 0 14px;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.form-tarefa {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.form-tarefa .input-campo {
+  flex: 1;
+  min-width: 0;
+}
+
+.lista-tarefas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item-tarefa {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background-color: #f8fafc;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.tarefa-texto {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #334155;
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.concluida {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.sem-tarefas {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+  margin: 8px 0 0;
+}
