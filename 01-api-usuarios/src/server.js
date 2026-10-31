@@ -11,6 +11,7 @@ import cors from 'cors'
 import express from 'express'
 import usuarioRoutes from './routes/usuarioRoutes.js' 
 import tarefaRoutes from './routes/tarefaRoutes.js'
+import authRoutes from './routes/authRoutes.js'
 import { gerenciadorDeErros } from './middlewares/gerenciadorDeErros.js';
 
 const app = express()
@@ -25,6 +26,9 @@ app.use(express.json())
 // 3 Conecta as rotas de usuários ao nosso servidor principal
 app.use(usuarioRoutes)
 app.use('/tarefas', tarefaRoutes)
+
+// rota do auth
+app.use('/auth', authRoutes)
 
 // 4 Ativa a rede de segurança global (SEMPRE depois de todas as rotas!)
 app.use(gerenciadorDeErros)

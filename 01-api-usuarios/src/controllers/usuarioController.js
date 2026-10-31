@@ -38,7 +38,7 @@ export const listarUsuarios = async (req, res) => {
         }
     })
 
-    // resposta dos usuarios encontrados
+    // resposta dos usuarios enc    ontrados
     res.status(200).json(usuarios)
 
 }
