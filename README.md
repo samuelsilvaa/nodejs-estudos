@@ -26,6 +26,8 @@ nodejs-estudos/
 - [x] Tratamento automático de erros do Prisma (`P2002` dado duplicado, `P2003` chave estrangeira inválida e `P2025` registro não encontrado)
 - [x] Respostas padronizadas com códigos HTTP apropriados (`200`, `201`, `204`, `400`, `404`, `409`, `500`)
 - [x] **CORS** restrito ao front-end, configurado por variável de ambiente
+- [x] Hash de senha com Argon2id
+- [x] Login com verificação de hash (Argon2id)
 
 ### Front-end (`02-front-usuarios`)
 
@@ -56,6 +58,7 @@ nodejs-estudos/
 | `POST` | `/usuarios/:id/tarefas` | Cria uma tarefa para o usuário |
 | `PUT` | `/tarefas/:id` | Edita uma tarefa |
 | `DELETE` | `/tarefas/:id` | Remove uma tarefa |
+| `POST` | `/auth/login` | Login do usuário |
 
 ## 🛠️ Tecnologias Utilizadas
 
