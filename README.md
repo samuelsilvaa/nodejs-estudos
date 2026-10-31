@@ -28,6 +28,7 @@ nodejs-estudos/
 - [x] **CORS** restrito ao front-end, configurado por variável de ambiente
 - [x] Hash de senha com Argon2id
 - [x] Login com verificação de hash (Argon2id)
+- [x] Limite de tentativas no login (rate limiting)
 
 ### Front-end (`02-front-usuarios`)
 
