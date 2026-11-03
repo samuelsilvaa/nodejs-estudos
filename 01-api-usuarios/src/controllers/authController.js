@@ -1,7 +1,12 @@
 import  argon2  from 'argon2';
 import { prisma } from "../lib/prisma.js";
 import { loginSchema } from "../schemas/authSchema.js";
+import jwt from 'jsonwebtoken';
 
+// falha cedo se o segredo não existir
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET não definido no .env')
+}
 
 // hash falso, para gastar o mesmo tempo quando o email não existir
 //gerado apenas uma vez
@@ -27,10 +32,20 @@ export const login = async (req, res) => {
         return res.status(401).json({ erro: "Email ou senha inválidos" })
     }
 
+
+    // gerar o token JWT
+    const token = jwt.sign(
+    { sub: usuario.id.toString()}, // o id vindo como string
+    process.env.JWT_SECRET, // o segredo
+    { expiresIn: '1h' })
+
+
     // respondendo um de cada vez, nunca ele inteiro
-    res.status(200).json({
-        id: usuario.id,
-        nome: usuario.nome,
-        email: usuario.email,
+    return res.status(200).json({
+        token, usuario: {
+            id: usuario.id,
+            nome: usuario.nome,
+            email: usuario.email,
+        },
     })
 };
