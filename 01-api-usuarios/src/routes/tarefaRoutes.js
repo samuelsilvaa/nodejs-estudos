@@ -4,11 +4,12 @@ import {
     editarTarefa,
     deletarTarefa
 } from '../controllers/tarefaController.js'
+import { autenticar } from '../middlewares/autenticar.js'
 
 
 const router = express.Router()
 
-router.put('/:id', editarTarefa)
-router.delete('/:id', deletarTarefa)
+router.put('/:id', autenticar, editarTarefa)
+router.delete('/:id', autenticar, deletarTarefa)
 
 export default router
