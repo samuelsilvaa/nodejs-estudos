@@ -30,6 +30,7 @@ nodejs-estudos/
 - [x] Login com verificação de hash (Argon2id)
 - [x] Limite de tentativas no login (rate limiting)
 - [x] JWT: token gerado no login (assinado, com validade)
+- [x] Rotas protegidas com middleware de autenticação (Bearer token)
 
 ### Front-end (`02-front-usuarios`)
 
