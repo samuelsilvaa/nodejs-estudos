@@ -4,7 +4,7 @@ import { idSchema, tarefaSchema } from '../schemas/tarefaSchema.js';
 
 // função de criar tarefas
 export const criarTarefa = async (req, res) => {
-    const usuarioId = idSchema.parse(req.params.id)
+    const usuarioId = req.usuario.id
     const { titulo, concluido } = tarefaSchema.parse(req.body)
 
     const tarefa = await prisma.tarefa.create({
@@ -17,14 +17,14 @@ export const criarTarefa = async (req, res) => {
 
 // função de listar Tarefa
 export const listarTarefa = async (req, res) => {
-    const usuarioId = idSchema.parse(req.params.id)
+    const usuarioId = req.usuario.id
     
-    const tarefa = await prisma.tarefa.findMany({
+    const tarefas = await prisma.tarefa.findMany({
         where: { usuarioId },
         orderBy: { id: 'asc' },
-    });
+    })
 
-    return res.status(200).json(tarefa)
+    return res.status(200).json(tarefas)
 
 }
 
@@ -32,10 +32,11 @@ export const listarTarefa = async (req, res) => {
 // função de editar tarefa
 export const editarTarefa = async (req, res) => {
     const id = idSchema.parse(req.params.id)
+    const usuarioId = req.usuario.id
     const { titulo, concluido } = tarefaSchema.parse(req.body)
 
     const tarefa = await prisma.tarefa.update({
-        where: {id},
+        where: {id, usuarioId},
         data: { titulo, concluido }
     })
 
@@ -46,10 +47,11 @@ export const editarTarefa = async (req, res) => {
 // funcao de deletar tarefa
 export const deletarTarefa = async (req, res) => {
     const id = idSchema.parse(req.params.id)
-    
+    const usuarioId = req.usuario.id
+
     await prisma.tarefa.delete({
-        where: {id},
+        where: {id, usuarioId},
     });
 
-    res.status(204).send()
+    return res.status(204).send()
 }

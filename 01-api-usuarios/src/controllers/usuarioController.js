@@ -113,3 +113,13 @@ export const atualizarUsuarioParcial = async (req, res) => {
     return res.status(200).json(usuario)
 
 };
+
+export const meuPerfil = async (req, res) => {
+
+    const usuario = await prisma.usuario.findUniqueOrThrow({
+        where: { id: req.usuario.id },
+        select: { id: true, nome: true, email: true }
+    })
+
+    return res.status(200).json(usuario)
+}
