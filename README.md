@@ -31,6 +31,7 @@ nodejs-estudos/
 - [x] Limite de tentativas no login (rate limiting)
 - [x] JWT: token gerado no login (assinado, com validade)
 - [x] Rotas protegidas com middleware de autenticação (Bearer token)
+- [x] Autorização: cada usuário acessa só os próprios dados (403 e 404).
 
 ### Front-end (`02-front-usuarios`)
 
@@ -49,19 +50,20 @@ nodejs-estudos/
 - [ ] Refazer o projeto em TypeScript
 
 ## 🛣️ Rotas da API
+## 🛣️ Rotas da API
 
-| Método | Endereço | O que faz |
-|---|---|---|
-| `POST` | `/usuarios` | Cria um usuário |
-| `GET` | `/usuarios` | Lista todos os usuários |
-| `PUT` | `/usuarios/:id` | Atualização total do usuário |
-| `PATCH` | `/usuarios/:id` | Atualização parcial do usuário |
-| `DELETE` | `/usuarios/:id` | Remove o usuário (e as tarefas dele, em cascata) |
-| `GET` | `/usuarios/:id/tarefas` | Lista as tarefas do usuário |
-| `POST` | `/usuarios/:id/tarefas` | Cria uma tarefa para o usuário |
-| `PUT` | `/tarefas/:id` | Edita uma tarefa |
-| `DELETE` | `/tarefas/:id` | Remove uma tarefa |
-| `POST` | `/auth/login` | Login do usuário |
+| Método | Endereço | Protegida | O que faz |
+|---|---|---|---|
+| `POST` | `/usuarios` | Não | Cria um usuário |
+| `POST` | `/auth/login` | Não | Faz login e devolve o token |
+| `GET` | `/usuarios/me` | Sim | Retorna os dados do usuário logado |
+| `PUT` | `/usuarios/:id` | Sim (só a própria conta) | Atualização total do usuário |
+| `PATCH` | `/usuarios/:id` | Sim (só a própria conta) | Atualização parcial do usuário |
+| `DELETE` | `/usuarios/:id` | Sim (só a própria conta) | Remove a própria conta |
+| `GET` | `/tarefas` | Sim | Lista as tarefas do usuário logado |
+| `POST` | `/tarefas` | Sim | Cria uma tarefa para o usuário logado |
+| `PUT` | `/tarefas/:id` | Sim (só as suas) | Edita uma tarefa do usuário logado |
+| `DELETE` | `/tarefas/:id` | Sim (só as suas) | Remove uma tarefa do usuário logado |
 
 ## 🛠️ Tecnologias Utilizadas
 
