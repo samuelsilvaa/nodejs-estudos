@@ -35,21 +35,26 @@ nodejs-estudos/
 
 ### Front-end (`02-front-usuarios`)
 
+### Front-end (`02-front-usuarios`)
+
 - [x] Projeto React com Vite
 - [x] Consumo da API com `fetch` e `async/await`
 - [x] `useState` e `useEffect` (inclusive com dependência)
-- [x] Formulários controlados (criar e editar no mesmo formulário)
-- [x] Listar, criar, editar e excluir usuários
+- [x] Formulários controlados
 - [x] Painel de tarefas por usuário, em um componente próprio que recebe props
-- [x] Mensagens de erro na tela, de acordo com o status da resposta (`400`, `404`, `409`, API fora do ar)
+- [x] Mensagens de erro na tela, de acordo com o status da resposta (`400`, `401`, `409`, `429`, API fora do ar)
 - [x] URL da API em variável de ambiente (`VITE_API_URL`)
+- [x] Login, cadastro e logout no React (token no `localStorage`)
+- [x] Persistência da sessão após recarregar a página
+- [x] Verificação da sessão com `GET /usuarios/me`
+- [x] Logout removendo o token do `localStorage`
+- [x] Tratamento de sessão expirada
 
 ### Próximos passos
 
 - [ ] Autenticação (hash de senha, JWT e rotas protegidas)
 - [ ] Refazer o projeto em TypeScript
 
-## 🛣️ Rotas da API
 ## 🛣️ Rotas da API
 
 | Método | Endereço | Protegida | O que faz |
