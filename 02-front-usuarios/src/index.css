@@ -241,3 +241,23 @@
   font-size: 14px;
   margin: 8px 0 0;
 }
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #0f766e;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: underline;
+  margin-top: 12px;
+}
+
+.msg-aviso {
+  color: #0f766e;
+  background-color: #ccfbf1;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 14px;
+  margin: 0 0 16px;
+} 
