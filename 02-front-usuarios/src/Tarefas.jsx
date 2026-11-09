@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react'
+import { api } from './api.js'
 
-const API_URL = import.meta.env.VITE_API_URL
-
-function Tarefas({ usuario }) {
+function Tarefas() {
   const [tarefas, setTarefas] = useState([])
   const [titulo, setTitulo] = useState('')
   const [erro, setErro] = useState('')
   const [carregando, setCarregando] = useState(true)
 
-  // BUSCAR as tarefas deste usuário (GET)
+  // listar tarefas (GET)
   async function buscarTarefas() {
     try {
-      const resposta = await fetch(`${API_URL}/usuarios/${usuario.id}/tarefas`)
+      const resposta = await api('/tarefas')
+
+      if(resposta.status === 401) {
+        return // o api.js já tratou: o App volta ao login
+      }
 
       if (!resposta.ok) {
         setErro('Não foi possível carregar as tarefas.')
@@ -27,13 +30,18 @@ function Tarefas({ usuario }) {
     }
   }
 
-  // roda ao abrir e DE NOVO sempre que o usuário muda
+  // roda ao abrir a tela
   useEffect(() => {
     buscarTarefas()
-  }, [usuario.id])
+  }, [])
 
   // transforma o status da resposta em mensagem para a tela
   async function tratarFalha(resposta) {
+    
+    if(resposta.status === 401) {
+      return // o api.js já tratou: o App volta ao login
+    }
+
     if (resposta.status === 400) {
       const dados = await resposta.json()
       setErro(dados.erros?.[0]?.mensagem ?? 'Confira os campos.')
@@ -49,16 +57,16 @@ function Tarefas({ usuario }) {
     setErro('Algo deu errado. Tente de novo.')
   }
 
+
   // CRIAR tarefa (POST)
   async function criarTarefa(evento) {
     evento.preventDefault()
     setErro('')
 
     try {
-      const resposta = await fetch(`${API_URL}/usuarios/${usuario.id}/tarefas`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ titulo }),
+      const resposta = await api('/tarefas', {
+        metodo: 'POST',
+        corpo: { titulo }
       })
 
       if (!resposta.ok) {
@@ -78,11 +86,12 @@ function Tarefas({ usuario }) {
     setErro('')
 
     try {
-      const resposta = await fetch(`${API_URL}/tarefas/${tarefa.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        // o PUT exige o título, então ele vai junto
-        body: JSON.stringify({ titulo: tarefa.titulo, concluido: !tarefa.concluido }),
+      const resposta = await api(`/tarefas/${tarefa.id}`, {
+        metodo: 'PUT',
+        corpo: { 
+          titulo: tarefa.titulo,
+          concluido: !tarefa.concluido
+         }
       })
 
       if (!resposta.ok) {
@@ -101,8 +110,8 @@ function Tarefas({ usuario }) {
     setErro('')
 
     try {
-      const resposta = await fetch(`${API_URL}/tarefas/${id}`, {
-        method: 'DELETE',
+      const resposta = await api(`/tarefas/${id}`, {
+        metodo: 'DELETE'
       })
 
       if (!resposta.ok) {
@@ -118,7 +127,7 @@ function Tarefas({ usuario }) {
 
   return (
     <div className='painel-tarefas'>
-      <h2 className='subtitulo'>Tarefas de {usuario.nome}</h2>
+      <h2 className='subtitulo'>Minhas tarefas</h2>
 
       <form onSubmit={criarTarefa} className='form-tarefa'>
         <input

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api, apagarToken, lerToken } from './api.js'
 import Auth from './Auth.jsx'
+import Tarefas from './Tarefas.jsx'
 
 function App() {
   const [usuario, setUsuario] = useState(null)
@@ -46,7 +47,7 @@ function App() {
     }
   }, [])
 
-  function sair() {
+  function sair() { // quando sair apaga tudo
     apagarToken()
     setUsuario(null)
     setAviso('')
@@ -65,14 +66,9 @@ function App() {
     )
   }
 
-  return (
+  return ( //parte principal quando o login é bem sucedido
     <div>
-      <h1>Olá, {usuario.nome}</h1>
-      <p>{usuario.email}</p>
-
-      <button className="btn-link" onClick={sair}>
-        Sair
-      </button>
+      <Tarefas/>
     </div>
   )
 }

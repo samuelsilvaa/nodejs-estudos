@@ -77,11 +77,15 @@ function Auth({ aoLogar }) {
         <>
             <div className="app-container">
                 <div className="card">
+
+                    {/* fomualario */}
                     <form onSubmit={enviar}>
+
                         <h1 className="titulo">
                             {modo === 'login' ? 'Login' : 'Cadastro'}
                         </h1>
 
+                        {/* Conditional render */}
                         {modo === 'cadastro' && (
                             <input
                                 className="input-campo"
