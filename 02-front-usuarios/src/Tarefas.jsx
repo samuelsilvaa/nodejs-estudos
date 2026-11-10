@@ -6,6 +6,7 @@ function Tarefas() {
   const [titulo, setTitulo] = useState('')
   const [erro, setErro] = useState('')
   const [carregando, setCarregando] = useState(true)
+  const [idEditando, setIdEditando] = useState(null) // null = criando
 
   // listar tarefas (GET)
   async function buscarTarefas() {
@@ -50,6 +51,7 @@ function Tarefas() {
 
     if (resposta.status === 404) {
       setErro('Esse registro não existe mais.')
+      cancelarEdicao()
       buscarTarefas() // a tela estava desatualizada: recarrega
       return
     }
@@ -59,13 +61,17 @@ function Tarefas() {
 
 
   // CRIAR tarefa (POST)
-  async function criarTarefa(evento) {
+  async function salvarTarefa(evento) {
     evento.preventDefault()
     setErro('')
 
+    const editando = idEditando !== null
+    const caminho = editando ? `/tarefas/${idEditando}` : '/tarefas'
+    const metodo = editando ? 'PUT' : 'POST'
+
     try {
-      const resposta = await api('/tarefas', {
-        metodo: 'POST',
+      const resposta = await api(caminho, {
+        metodo,
         corpo: { titulo }
       })
 
@@ -74,7 +80,7 @@ function Tarefas() {
         return
       }
 
-      setTitulo('')
+      cancelarEdicao()
       buscarTarefas()
     } catch {
       setErro('Não foi possível falar com a API. Ela está rodando?')
@@ -119,17 +125,35 @@ function Tarefas() {
         return
       }
 
+      if(id === idEditando) {
+        cancelarEdicao()
+      }
+
       buscarTarefas()
     } catch {
       setErro('Não foi possível falar com a API. Ela está rodando?')
     }
   }
 
+
+  // editar tarefas
+  function iniciarEdicao(tarefa) {
+    setIdEditando(tarefa.id)
+    setTitulo(tarefa.titulo)
+    setErro('')
+  }
+
+  //cancelar a edição
+  function cancelarEdicao() {
+    setIdEditando(null)
+    setTitulo('')
+  }
+
   return (
     <div className='painel-tarefas'>
       <h2 className='subtitulo'>Minhas tarefas</h2>
 
-      <form onSubmit={criarTarefa} className='form-tarefa'>
+      <form onSubmit={salvarTarefa} className='form-tarefa'>
         <input
           type='text'
           className='input-campo'
@@ -138,11 +162,14 @@ function Tarefas() {
           onChange={(e) => setTitulo(e.target.value)}
           required
         />
-        <button type='submit' className='btn-criar'>Adicionar</button>
+        <button type='submit' className='btn-criar'>{ idEditando !== null ? 'Salvar' : 'Adicionar' }</button>
+        {idEditando !== null && (
+          <button type='button' className='btn-cancelar' onClick={cancelarEdicao}>Cancelar</button>
+        )}
       </form>
 
       {erro && <p className='msg-erro'>{erro}</p>}
-
+      
       {carregando ? (
         <p className='sem-tarefas'>Carregando...</p>
       ) : tarefas.length === 0 ? (
@@ -159,9 +186,13 @@ function Tarefas() {
                 />
                 <span className={t.concluido ? 'concluida' : ''}>{t.titulo}</span>
               </label>
-              <button className='btn-excluir' onClick={() => excluirTarefa(t.id)}>
-                Excluir
-              </button>
+
+                {/* editar e excluir */}
+               <div className='acoes-usuario'>
+                  <button className='btn-editar' onClick={() => iniciarEdicao(t)}>Editar</button>
+                  <button className='btn-excluir' onClick={() => excluirTarefa(t.id)}>Excluir</button>
+                </div>
+
             </li>
           ))}
         </ul>
