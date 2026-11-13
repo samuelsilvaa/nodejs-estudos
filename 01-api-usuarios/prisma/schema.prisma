@@ -13,6 +13,7 @@ model Usuario {
   email   String @unique
   senha   String
   tarefas Tarefa[]
+  refreshTokens RefreshToken[]
 }
 
 model Tarefa {
@@ -22,4 +23,18 @@ model Tarefa {
   criadaEm  DateTime @default(now())
   usuarioId Int 
   usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+}
+
+
+model RefreshToken {
+  id          Int       @id @default(autoincrement())
+  tokenHash   String    @unique    // SHA-256 do token (o token inteiro nunca é guardado)
+  familia     String               // identifica a cadeia de tokens de um mesmo login
+  usadoEm     DateTime?            // preenchido quando o token é usado (rotação)
+  expiraEm  DateTime
+  criadoEm    DateTime  @default(now())
+  usuarioId   Int
+  usuario     Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([familia])
 }

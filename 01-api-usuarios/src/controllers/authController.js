@@ -2,6 +2,7 @@ import  argon2  from 'argon2';
 import { prisma } from "../lib/prisma.js";
 import { loginSchema } from "../schemas/authSchema.js";
 import jwt from 'jsonwebtoken';
+import { criarRefreshToken, opcoesCookie } from '../lib/refreshToken.js';
 
 // falha cedo se o segredo não existir
 if (!process.env.JWT_SECRET) {
@@ -38,6 +39,11 @@ export const login = async (req, res) => {
     { sub: usuario.id.toString()}, // o id vindo como string
     process.env.JWT_SECRET, // o segredo
     { expiresIn: '1h' })
+    
+    
+     //cria o refresh token
+    const refresh = await criarRefreshToken(usuario.id)
+    res.cookie('refreshToken', refresh, opcoesCookie)
 
 
     // respondendo um de cada vez, nunca ele inteiro

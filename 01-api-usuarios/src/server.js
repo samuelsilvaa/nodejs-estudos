@@ -18,7 +18,7 @@ const app = express()
 const PORT = process.env.PORT || 3000
 
 // 1 Apenas a liberação segura para o Front-end específico
-app.use(cors({ origin: process.env.FRONTEND_URL }))
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true })) // sem credentials: true o navegador recusa o cookie
 
 // 2 Avisa o express para aceitar JSON no corpo (body) das requisições
 app.use(express.json())
