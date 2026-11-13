@@ -32,8 +32,7 @@ nodejs-estudos/
 - [x] JWT: token gerado no login (assinado, com validade)
 - [x] Rotas protegidas com middleware de autenticação (Bearer token)
 - [x] Autorização: cada usuário acessa só os próprios dados (403 e 404).
-
-### Front-end (`02-front-usuarios`)
+- [x] Refresh token (parte 1): tabela e cookie HttpOnly no login
 
 ### Front-end (`02-front-usuarios`)
 
@@ -49,10 +48,11 @@ nodejs-estudos/
 - [x] Verificação da sessão com `GET /usuarios/me`
 - [x] Logout removendo o token do `localStorage`
 - [x] Tratamento de sessão expirada
+- [x] Tarefas do usuário logado, com o token enviado em todas as requisições
 
 ### Próximos passos
 
-- [ ] Autenticação (hash de senha, JWT e rotas protegidas)
+- [x] Autenticação (hash de senha, JWT e rotas protegidas)
 - [ ] Refazer o projeto em TypeScript
 
 ## 🛣️ Rotas da API
