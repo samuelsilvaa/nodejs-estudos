@@ -2,7 +2,8 @@ import  argon2  from 'argon2';
 import { prisma } from "../lib/prisma.js";
 import { loginSchema } from "../schemas/authSchema.js";
 import jwt from 'jsonwebtoken';
-import { criarRefreshToken, opcoesCookie } from '../lib/refreshToken.js';
+import { criarRefreshToken, hashDoToken, opcoesCookie } from '../lib/refreshToken.js';
+import { gerarAccessToken } from '../lib/accessToken.js';
 
 // falha cedo se o segredo não existir
 if (!process.env.JWT_SECRET) {
@@ -35,10 +36,7 @@ export const login = async (req, res) => {
 
 
     // gerar o token JWT
-    const token = jwt.sign(
-    { sub: usuario.id.toString()}, // o id vindo como string
-    process.env.JWT_SECRET, // o segredo
-    { expiresIn: '1h' })
+    const token = gerarAccessToken(usuario.id)
     
     
      //cria o refresh token
@@ -55,3 +53,81 @@ export const login = async (req, res) => {
         },
     })
 };
+
+
+// função auxiliar de recusar
+const recusar = (res) => {
+    res.clearCookie('refreshToken', opcoesCookie)
+    return res.status(401).json({ erro: 'Sessão inválida' })
+}
+
+// função auxiliar
+const revogarFamilia = (familia) => 
+    prisma.refreshToken.deleteMany({ where: { familia } })
+
+
+export const refresh = async (req, res) => {
+    // ler o cookie que vem do refreshToken
+    const token = req.cookies.refreshToken
+    // recusar da função auxiliar
+    if(!token) return recusar(res)
+
+    // achar o registro pelo HASH do token
+    const registro = await prisma.refreshToken.findUnique({ 
+        where: { tokenHash: hashDoToken(token) }
+    }) 
+
+    if(!registro) return recusar(res)
+
+    // REUSO: se o registro ja estiver preenchido
+    if(registro.usadoEm) {
+        await revogarFamilia(registro.familia)
+
+        return recusar(res)
+    }
+
+    // VENCIDO: se registro.expiraEm for anterior a agora
+    if(registro.expiraEm < new Date()) return recusar(res)
+
+    //MARCAR COMO USADO, de forma atômica:
+    const { count } = await prisma.refreshToken.updateMany({
+        where: { id: registro.id, usadoEm: null },
+        data: {
+            usadoEm: new Date()
+        },
+    })
+
+    if(count === 0) {
+        await revogarFamilia(registro.familia)
+        return recusar(res)
+    }
+
+    // criar o refresh novo, na mesma família
+    const novoRefresh = await criarRefreshToken(registro.usuarioId, registro.familia)
+
+    // guardar no cookie
+    res.cookie('refreshToken', novoRefresh, opcoesCookie)
+
+    // responder com o access token novo
+    return res.status(200).json({ token: gerarAccessToken(registro.usuarioId) })
+}
+
+
+export const logout = async (req, res) => {
+
+    const token = req.cookies.refreshToken
+
+    if(token) {
+        const registro = await prisma.refreshToken.findUnique({
+            where: { tokenHash: hashDoToken(token)}
+        })
+
+        if(registro) {
+            await revogarFamilia(registro.familia)
+        }
+    }
+
+    res.clearCookie('refreshToken', opcoesCookie)
+
+    return res.status(204).send()
+}

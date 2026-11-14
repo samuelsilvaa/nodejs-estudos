@@ -13,6 +13,7 @@ import usuarioRoutes from './routes/usuarioRoutes.js'
 import tarefaRoutes from './routes/tarefaRoutes.js'
 import authRoutes from './routes/authRoutes.js'
 import { gerenciadorDeErros } from './middlewares/gerenciadorDeErros.js';
+import cookieParser from 'cookie-parser'
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -22,6 +23,9 @@ app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true })) // sem cr
 
 // 2 Avisa o express para aceitar JSON no corpo (body) das requisições
 app.use(express.json())
+
+
+app.use(cookieParser())
 
 // 3 Conecta as rotas de usuários ao nosso servidor principal
 app.use(usuarioRoutes)
