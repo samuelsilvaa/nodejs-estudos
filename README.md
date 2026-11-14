@@ -33,6 +33,7 @@ nodejs-estudos/
 - [x] Rotas protegidas com middleware de autenticação (Bearer token)
 - [x] Autorização: cada usuário acessa só os próprios dados (403 e 404).
 - [x] Refresh token (parte 1): tabela e cookie HttpOnly no login
+- [x] Refresh token (parte 2): rotação, detecção de reuso e logout
 
 ### Front-end (`02-front-usuarios`)
 
